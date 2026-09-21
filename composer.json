@@ -1,0 +1,55 @@
+{
+  "name": "prc/primitives",
+  "version": "1.0.0",
+  "description": "Shared PHP primitives for the PRC Platform: block utilities, HTML processors, and delayed Action Scheduler jobs.",
+  "type": "library",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=8.2",
+    "dougsisk/laravel-country-state": "^5.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "wp-phpunit/wp-phpunit": "^6.4",
+    "yoast/phpunit-polyfills": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "PRC\\BlockUtils\\": "src/block-utils/",
+      "PRC\\Html\\": "src/html-processors/",
+      "PRC\\DelayedAction\\": "src/delayed-action/"
+    },
+    "files": [
+      "src/block-utils/functions.php",
+      "src/html-processors/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PRC\\BlockUtils\\Tests\\": "tests/block-utils/",
+      "PRC\\Html\\Tests\\": "tests/html/",
+      "PRC\\DelayedAction\\Tests\\": "tests/delayed-action/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test:unit": "phpunit --testsuite unit",
+    "test:integration": "phpunit --testsuite integration",
+    "test:html": "phpunit --testsuite html"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "platform": {
+      "php": "8.4.0"
+    }
+  },
+  "minimum-stability": "stable",
+  "extra": {
+    "branch-alias": {
+      "dev-trunk": "1.0.x-dev"
+    }
+  }
+}
