@@ -37,6 +37,10 @@ final class FakeScheduler implements Scheduler {
 		$this->pending_after_failed_schedule   = JobState::pending( $timestamp );
 	}
 
+	public function fail_next_schedule(): void {
+		$this->fail_schedule = true;
+	}
+
 	public function set_job( string $hook, array $args, string $group, JobState $state ): void {
 		$this->jobs[ $this->key( $hook, $args, $group ) ] = $state;
 	}

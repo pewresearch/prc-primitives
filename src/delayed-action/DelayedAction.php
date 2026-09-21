@@ -72,9 +72,9 @@ final class DelayedAction {
 		}
 
 		return new WP_Error(
-			'already_scheduled',
-			'An action is already queued for this hook and arguments.',
-			array( 'status' => 409 )
+			'schedule_failed',
+			'The action could not be queued.',
+			array( 'status' => 500 )
 		);
 	}
 

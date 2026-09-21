@@ -137,22 +137,9 @@ class TableProcessor extends \WP_HTML_Tag_Processor {
 	 * @return array<string, mixed>|\WP_Error
 	 */
 	public function get_data() {
-		$table_headers = array();
-		$table_rows    = array();
-		$table_footer  = array();
-
 		$this->next_tag( 'table' );
 
-		if ( $this->next_tag( 'thead' ) ) {
-			$this->set_bookmark( 'thead' );
-			while ( $this->next_tag( 'tr' ) ) {
-				while ( $this->next_tag( 'th' ) ) {
-					$table_headers[] = $this->get_content_between_balanced_template_tags();
-				}
-			}
-			// Cleaning the tree as we go.
-			$this->seek( 'thead' );
-		}
+		$table_headers = $this->collect_section_cells( 'thead', 'th' );
 
 		if ( empty( $table_headers ) ) {
 			return new \WP_Error(
@@ -161,28 +148,14 @@ class TableProcessor extends \WP_HTML_Tag_Processor {
 			);
 		}
 
-		if ( $this->next_tag( 'tbody' ) ) {
-			$this->set_bookmark( 'tbody' );
-			while ( $this->next_tag( 'tr' ) ) {
-				while ( $this->next_tag( 'td' ) ) {
-					$table_rows[] = $this->get_content_between_balanced_template_tags();
-				}
-			}
-			// Cleaning the tree as we go
-			$this->seek( 'tbody' );
+		$table_rows = $this->collect_section_cells( 'tbody', 'td' );
+		if ( ! empty( $table_rows ) ) {
 			// Split table rows into cells by the number of headers, quicker and easier than trying to compute and iterate over columns/cells in WP_HTML_Tag_Processor.
 			$table_rows = array_chunk( $table_rows, count( $table_headers ) );
 		}
 
-		if ( $this->next_tag( 'tfoot' ) ) {
-			$this->set_bookmark( 'tfoot' );
-			while ( $this->next_tag( 'tr' ) ) {
-				while ( $this->next_tag( 'td' ) ) {
-					$table_footer[] = $this->get_content_between_balanced_template_tags();
-				}
-			}
-			// Cleaning the tree as we go
-			$this->seek( 'tfoot' );
+		$table_footer = $this->collect_section_cells( 'tfoot', 'td' );
+		if ( ! empty( $table_footer ) ) {
 			// Split table rows into cells by the number of headers
 			$table_footer = array_chunk( $table_footer, count( $table_headers ) );
 		}
@@ -192,5 +165,35 @@ class TableProcessor extends \WP_HTML_Tag_Processor {
 			'rows'   => $table_rows,
 			'footer' => $table_footer,
 		);
+	}
+
+	/**
+	 * Collect cell contents from the next matching table section only.
+	 *
+	 * WP_HTML_Tag_Processor::next_tag() is not scoped to the current parent,
+	 * so scanning `th`/`td` on the document walker also picks up later sections.
+	 * Parsing the section's inner HTML keeps header, body, and footer separate.
+	 *
+	 * @param string $section_tag thead, tbody, or tfoot.
+	 * @param string $cell_tag    th or td.
+	 * @return array<int, string|null>
+	 */
+	private function collect_section_cells( string $section_tag, string $cell_tag ): array {
+		$cells = array();
+		if ( ! $this->next_tag( $section_tag ) ) {
+			return $cells;
+		}
+
+		$section_html = $this->get_content_between_balanced_template_tags();
+		if ( null === $section_html || '' === $section_html ) {
+			return $cells;
+		}
+
+		$inner = new self( $section_html );
+		while ( $inner->next_tag( $cell_tag ) ) {
+			$cells[] = $inner->get_content_between_balanced_template_tags();
+		}
+
+		return $cells;
 	}
 }

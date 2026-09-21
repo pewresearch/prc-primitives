@@ -64,4 +64,26 @@ class Test_Pagination extends WP_UnitTestCase {
 		$markup = $p->get_markup();
 		$this->assertStringContainsString( 'common-block-style__pagination__container', $markup );
 	}
+
+	public function test_get_markup_escapes_href_and_renders_arrow_labels() {
+		$items = array(
+			array(
+				'title'     => '1',
+				'link'      => '/1',
+				'is_active' => true,
+			),
+			array(
+				'title'     => '2',
+				'link'      => '/2" onclick="alert(1)',
+				'is_active' => false,
+			),
+		);
+		$p      = new Pagination( $items );
+		$markup = $p->get_markup();
+		$this->assertStringNotContainsString( 'onclick="alert(1)"', $markup );
+		$this->assertStringContainsString( 'href="', $markup );
+		$this->assertStringContainsString( 'Next Page →', $markup );
+		$this->assertStringNotContainsString( '&amp;rarr;', $markup );
+		$this->assertStringNotContainsString( '&amp;larr;', $markup );
+	}
 }

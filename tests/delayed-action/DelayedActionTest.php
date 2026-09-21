@@ -62,6 +62,30 @@ final class DelayedActionTest extends TestCase {
 		$this->assertSame( $deduped, $result['scheduled_at'] );
 	}
 
+	public function test_queue_returns_schedule_failed_when_store_write_fails(): void {
+		$scheduler = new FakeScheduler();
+		$scheduler->fail_next_schedule();
+		$action = new DelayedAction( $scheduler );
+
+		$result = $action->queue( self::HOOK, self::ARGS, self::GROUP, 600 );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'schedule_failed', $result->get_error_code() );
+		$this->assertTrue( $scheduler->next( self::HOOK, self::ARGS, self::GROUP )->is_absent() );
+	}
+
+	public function test_queue_returns_schedule_failed_when_unique_job_is_running(): void {
+		$scheduler = new FakeScheduler();
+		$scheduler->set_job( self::HOOK, self::ARGS, self::GROUP, JobState::running() );
+		$action = new DelayedAction( $scheduler );
+
+		$result = $action->queue( self::HOOK, self::ARGS, self::GROUP, 600 );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'schedule_failed', $result->get_error_code() );
+		$this->assertTrue( $scheduler->next( self::HOOK, self::ARGS, self::GROUP )->is_running() );
+	}
+
 	public function test_queue_returns_unavailable_when_scheduler_is_missing(): void {
 		$scheduler = new FakeScheduler();
 		$scheduler->set_available( false );

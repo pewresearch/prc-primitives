@@ -19,6 +19,11 @@ class Test_GetWpInteractive extends WP_UnitTestCase {
 		$this->assertSame( 'hello', get_wp_interactive_input_value( $html ) );
 	}
 
+	public function test_input_value_preserves_zero() {
+		$html = '<input type="text" value="0" />';
+		$this->assertSame( '0', get_wp_interactive_input_value( $html ) );
+	}
+
 	public function test_on_click() {
 		$html = '<input type="button" data-wp-on--click="actions.foo" />';
 		$this->assertSame( 'actions.foo', get_wp_interactive_on_click_action( $html ) );

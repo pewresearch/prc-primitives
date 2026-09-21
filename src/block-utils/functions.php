@@ -110,8 +110,11 @@ function find_blocks( $blocks, $pattern = 'prc-block/', $depth = 0 ) {
  */
 function get_wp_interactive_input_value( $content ) {
 	$processor = new WP_HTML_Tag_Processor( $content );
-	if ( $processor->next_tag( 'input' ) && $processor->get_attribute( 'value' ) ) {
-		return $processor->get_attribute( 'value' );
+	if ( $processor->next_tag( 'input' ) ) {
+		$value = $processor->get_attribute( 'value' );
+		if ( null !== $value ) {
+			return $value;
+		}
 	}
 	return null;
 }

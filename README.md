@@ -48,7 +48,7 @@ $queued  = $delayed->queue( 'prc_example_send', array( $post_id ), 'prc-example'
 $cancel  = $delayed->cancel( 'prc_example_send', array( $post_id ), 'prc-example' );
 ```
 
-`queue()` returns `{ queued: true, scheduled_at: int }` or a `WP_Error`. Codes are `action_scheduler_unavailable` and `already_scheduled`. `cancel()` returns `{ cancelled: true }` or a `WP_Error`. Codes are `no_pending`, `in_progress`, and `action_scheduler_unavailable`.
+`queue()` returns `{ queued: true, scheduled_at: int }` or a `WP_Error`. Codes are `action_scheduler_unavailable` and `schedule_failed`. `cancel()` returns `{ cancelled: true }` or a `WP_Error`. Codes are `no_pending`, `in_progress`, and `action_scheduler_unavailable`.
 
 ## Tests
 

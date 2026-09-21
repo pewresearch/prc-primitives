@@ -142,7 +142,7 @@ class Pagination {
 	 * @param string      $next_or_previous next|prev.
 	 * @return string
 	 */
-	public function get_adjacent_post_button( $link = false, $label = 'Next Page &rarr;', $button_classnames = '', $next_or_previous = 'next' ) {
+	public function get_adjacent_post_button( $link = false, $label = 'Next Page →', $button_classnames = '', $next_or_previous = 'next' ) {
 		$tag_name   = $link ? 'a' : 'span';
 		$classnames = classNames(
 			$button_classnames,
@@ -156,7 +156,7 @@ class Pagination {
 			'<%1$s class="%2$s"%3$s>%4$s</%1$s>',
 			esc_html( $tag_name ),
 			esc_attr( $classnames ),
-			'span' !== $tag_name ? "href='$link'" : '',
+			'span' !== $tag_name ? 'href="' . esc_url( $link ) . '"' : '',
 			esc_html( $label )
 		);
 	}
@@ -210,7 +210,7 @@ class Pagination {
 		return wp_sprintf(
 			'<%1$s %2$s class="%3$s" title="%4$s">%5$s</%1$s>',
 			esc_html( $tag_name ),
-			'span' !== $tag_name ? "href='$link'" : '',
+			'span' !== $tag_name ? 'href="' . esc_url( $link ) . '"' : '',
 			esc_attr( $classnames ),
 			esc_attr( $title ),
 			esc_html( $number )
@@ -284,8 +284,8 @@ class Pagination {
 				'item_classnames'           => '',
 				'display_next_prev_buttons' => true,
 				'button_classnames'         => '',
-				'next_button_label'         => 'Next Page &rarr;',
-				'prev_button_label'         => '&larr; Prev Page',
+				'next_button_label'         => 'Next Page →',
+				'prev_button_label'         => '← Prev Page',
 			)
 		);
 		$items = $this->get_items();
