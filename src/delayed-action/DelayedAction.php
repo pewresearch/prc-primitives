@@ -2,12 +2,12 @@
 /**
  * Delay and cancel a unique Action Scheduler job.
  *
- * @package PRC\DelayedAction
+ * @package PRC\Primitives\DelayedAction
  */
 
 declare(strict_types=1);
 
-namespace PRC\DelayedAction;
+namespace PRC\Primitives\DelayedAction;
 
 use WP_Error;
 

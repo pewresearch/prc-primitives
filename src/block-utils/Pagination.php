@@ -2,10 +2,10 @@
 /**
  * Sliding-window pagination markup.
  *
- * @package PRC\BlockUtils
+ * @package PRC\Primitives\BlockUtils
  */
 
-namespace PRC\BlockUtils;
+namespace PRC\Primitives\BlockUtils;
 
 /**
  * Pagination renderer for block-style chapter / attachment pagination.

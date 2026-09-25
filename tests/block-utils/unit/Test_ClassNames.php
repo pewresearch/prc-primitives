@@ -1,13 +1,13 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\classNames;
+use function PRC\Primitives\BlockUtils\classNames;
 
 class Test_ClassNames extends WP_UnitTestCase {
 

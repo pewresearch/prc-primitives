@@ -1,13 +1,13 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\get_spacing_preset_css_var;
+use function PRC\Primitives\BlockUtils\get_spacing_preset_css_var;
 
 class Test_GetSpacingPresetCssVar extends WP_UnitTestCase {
 

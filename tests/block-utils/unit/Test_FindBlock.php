@@ -1,14 +1,14 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\find_block;
-use function PRC\BlockUtils\find_blocks;
+use function PRC\Primitives\BlockUtils\find_block;
+use function PRC\Primitives\BlockUtils\find_blocks;
 
 class Test_FindBlock extends WP_UnitTestCase {
 

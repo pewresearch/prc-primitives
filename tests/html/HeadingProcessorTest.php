@@ -5,16 +5,16 @@
 
 declare(strict_types=1);
 
-namespace PRC\Html\Tests;
+namespace PRC\Primitives\HTML_Processors\Tests;
 
 use PHPUnit\Framework\TestCase;
-use PRC\Html\HeadingProcessor;
+use PRC\Primitives\HTML_Processors\HeadingProcessor;
 
-use function PRC\Html\parse_document_for_headings;
-use function PRC\Html\update_document_headings_with_ids;
+use function PRC\Primitives\HTML_Processors\parse_document_for_headings;
+use function PRC\Primitives\HTML_Processors\update_document_headings_with_ids;
 
 /**
- * @covers \PRC\Html\HeadingProcessor
+ * @covers \PRC\Primitives\HTML_Processors\HeadingProcessor
  */
 final class HeadingProcessorTest extends TestCase {
 

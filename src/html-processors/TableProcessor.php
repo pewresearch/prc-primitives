@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace PRC\Html;
+namespace PRC\Primitives\HTML_Processors;
 
 /**
  * Pass in a table and get back an array of the header, rows, and footer cells.

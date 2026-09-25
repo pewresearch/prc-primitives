@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace PRC\Html;
+namespace PRC\Primitives\HTML_Processors;
 
 /**
  * Pass in a document and get back an array of h2 and h3 elements and their contents.

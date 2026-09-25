@@ -2,20 +2,20 @@
 /**
  * DelayedAction queue and cancel behavior.
  *
- * @package PRC\DelayedAction\Tests
+ * @package PRC\Primitives\DelayedAction\Tests
  */
 
 declare(strict_types=1);
 
-namespace PRC\DelayedAction\Tests;
+namespace PRC\Primitives\DelayedAction\Tests;
 
 use PHPUnit\Framework\TestCase;
-use PRC\DelayedAction\DelayedAction;
-use PRC\DelayedAction\JobState;
+use PRC\Primitives\DelayedAction\DelayedAction;
+use PRC\Primitives\DelayedAction\JobState;
 use WP_Error;
 
 /**
- * @covers \PRC\DelayedAction\DelayedAction
+ * @covers \PRC\Primitives\DelayedAction\DelayedAction
  */
 final class DelayedActionTest extends TestCase {
 

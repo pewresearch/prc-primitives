@@ -1,13 +1,13 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\get_country_code_from_name;
+use function PRC\Primitives\BlockUtils\get_country_code_from_name;
 
 class Test_GetCountryCodeFromName extends WP_UnitTestCase {
 

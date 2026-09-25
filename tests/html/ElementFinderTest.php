@@ -5,13 +5,13 @@
 
 declare(strict_types=1);
 
-namespace PRC\Html\Tests;
+namespace PRC\Primitives\HTML_Processors\Tests;
 
 use PHPUnit\Framework\TestCase;
-use PRC\Html\ElementFinder;
+use PRC\Primitives\HTML_Processors\ElementFinder;
 
 /**
- * @covers \PRC\Html\ElementFinder
+ * @covers \PRC\Primitives\HTML_Processors\ElementFinder
  */
 final class ElementFinderTest extends TestCase {
 

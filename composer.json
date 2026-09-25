@@ -1,7 +1,6 @@
 {
   "name": "prc/primitives",
-  "version": "1.0.0",
-  "description": "Shared PHP primitives for the PRC Platform: block utilities, HTML processors, and delayed Action Scheduler jobs.",
+  "description": "Shared PHP primitives for the PRC Platform: block utilities, HTML processors, delayed Action Scheduler jobs, URL to post ID resolution, and term data store relationships.",
   "type": "library",
   "license": "GPL-2.0-or-later",
   "require": {
@@ -15,20 +14,24 @@
   },
   "autoload": {
     "psr-4": {
-      "PRC\\BlockUtils\\": "src/block-utils/",
-      "PRC\\Html\\": "src/html-processors/",
-      "PRC\\DelayedAction\\": "src/delayed-action/"
+      "PRC\\Primitives\\BlockUtils\\": "src/block-utils/",
+      "PRC\\Primitives\\HTML_Processors\\": "src/html-processors/",
+      "PRC\\Primitives\\DelayedAction\\": "src/delayed-action/"
     },
     "files": [
       "src/block-utils/functions.php",
-      "src/html-processors/functions.php"
+      "src/html-processors/functions.php",
+      "src/url-helper/url-helper.php",
+      "src/term-data-store/term-data-store.php"
     ]
   },
   "autoload-dev": {
     "psr-4": {
-      "PRC\\BlockUtils\\Tests\\": "tests/block-utils/",
-      "PRC\\Html\\Tests\\": "tests/html/",
-      "PRC\\DelayedAction\\Tests\\": "tests/delayed-action/"
+      "PRC\\Primitives\\BlockUtils\\Tests\\": "tests/block-utils/",
+      "PRC\\Primitives\\HTML_Processors\\Tests\\": "tests/html/",
+      "PRC\\Primitives\\DelayedAction\\Tests\\": "tests/delayed-action/",
+      "PRC\\Primitives\\URL_Helper\\Tests\\": "tests/url-helper/",
+      "PRC\\Primitives\\TDS\\Tests\\": "tests/term-data-store/"
     }
   },
   "scripts": {
@@ -49,7 +52,7 @@
   "minimum-stability": "stable",
   "extra": {
     "branch-alias": {
-      "dev-trunk": "1.0.x-dev"
+      "dev-trunk": "1.x-dev"
     }
   }
 }

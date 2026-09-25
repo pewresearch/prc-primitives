@@ -2,10 +2,10 @@
 /**
  * List rendering stub (reserved for future consolidation).
  *
- * @package PRC\BlockUtils
+ * @package PRC\Primitives\BlockUtils
  */
 
-namespace PRC\BlockUtils;
+namespace PRC\Primitives\BlockUtils;
 
 // phpcs:ignore Squiz.Commenting.FileComment.Missing
 // TODO: centralize list rendering for table of contents, attachment list, report materials, etc.

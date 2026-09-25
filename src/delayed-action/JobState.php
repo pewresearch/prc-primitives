@@ -2,12 +2,12 @@
 /**
  * Scheduler job state.
  *
- * @package PRC\DelayedAction
+ * @package PRC\Primitives\DelayedAction
  */
 
 declare(strict_types=1);
 
-namespace PRC\DelayedAction;
+namespace PRC\Primitives\DelayedAction;
 
 /**
  * One of three states for a delayed Action Scheduler job.

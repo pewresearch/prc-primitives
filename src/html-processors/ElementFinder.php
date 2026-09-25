@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace PRC\Html;
+namespace PRC\Primitives\HTML_Processors;
 
 /**
  * Pass in a document, a desired tag, and an id and get back the content of the tag with the matching id.

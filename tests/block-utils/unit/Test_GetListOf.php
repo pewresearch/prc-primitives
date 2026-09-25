@@ -1,13 +1,13 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\get_list_of;
+use function PRC\Primitives\BlockUtils\get_list_of;
 
 class Test_GetListOf extends WP_UnitTestCase {
 

@@ -1,13 +1,13 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\normalize_url_to_production;
+use function PRC\Primitives\BlockUtils\normalize_url_to_production;
 
 class Test_NormalizeUrl extends WP_UnitTestCase {
 

@@ -1,17 +1,17 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\is_google_bot;
-use function PRC\BlockUtils\is_gpt_bot;
-use function PRC\BlockUtils\is_bot;
-use function PRC\BlockUtils\is_facebook_request;
-use function PRC\BlockUtils\is_twitter_request;
+use function PRC\Primitives\BlockUtils\is_google_bot;
+use function PRC\Primitives\BlockUtils\is_gpt_bot;
+use function PRC\Primitives\BlockUtils\is_bot;
+use function PRC\Primitives\BlockUtils\is_facebook_request;
+use function PRC\Primitives\BlockUtils\is_twitter_request;
 
 class Test_BotDetection extends WP_UnitTestCase {
 

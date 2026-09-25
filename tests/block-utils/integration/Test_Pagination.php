@@ -1,11 +1,11 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
-use PRC\BlockUtils\Pagination;
+use PRC\Primitives\BlockUtils\Pagination;
 use WP_UnitTestCase;
 
 class Test_Pagination extends WP_UnitTestCase {

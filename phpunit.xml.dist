@@ -12,10 +12,14 @@
 		<testsuite name="unit">
 			<directory suffix=".php">./tests/block-utils/unit/</directory>
 			<directory suffix=".php">./tests/delayed-action/</directory>
+			<directory suffix=".php">./tests/url-helper/unit/</directory>
+			<directory suffix=".php">./tests/term-data-store/unit/</directory>
 			<exclude>./tests/delayed-action/FakeScheduler.php</exclude>
 		</testsuite>
 		<testsuite name="integration">
 			<directory suffix=".php">./tests/block-utils/integration/</directory>
+			<directory suffix=".php">./tests/url-helper/integration/</directory>
+			<directory suffix=".php">./tests/term-data-store/integration/</directory>
 		</testsuite>
 		<testsuite name="html">
 			<directory suffix=".php">./tests/html/</directory>

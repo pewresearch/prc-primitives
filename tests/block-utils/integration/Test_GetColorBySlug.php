@@ -1,13 +1,13 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\get_color_by_slug;
+use function PRC\Primitives\BlockUtils\get_color_by_slug;
 
 class Test_GetColorBySlug extends WP_UnitTestCase {
 

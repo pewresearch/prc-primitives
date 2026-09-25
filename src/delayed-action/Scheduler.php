@@ -2,12 +2,12 @@
 /**
  * Scheduler for delayed single actions.
  *
- * @package PRC\DelayedAction
+ * @package PRC\Primitives\DelayedAction
  */
 
 declare(strict_types=1);
 
-namespace PRC\DelayedAction;
+namespace PRC\Primitives\DelayedAction;
 
 /**
  * Queue, inspect, and cancel delayed single actions.

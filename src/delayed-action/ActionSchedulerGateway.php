@@ -2,12 +2,12 @@
 /**
  * Action Scheduler adapter.
  *
- * @package PRC\DelayedAction
+ * @package PRC\Primitives\DelayedAction
  */
 
 declare(strict_types=1);
 
-namespace PRC\DelayedAction;
+namespace PRC\Primitives\DelayedAction;
 
 /**
  * Translates Action Scheduler function returns into JobState.

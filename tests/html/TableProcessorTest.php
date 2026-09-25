@@ -5,15 +5,15 @@
 
 declare(strict_types=1);
 
-namespace PRC\Html\Tests;
+namespace PRC\Primitives\HTML_Processors\Tests;
 
 use PHPUnit\Framework\TestCase;
-use PRC\Html\TableProcessor;
+use PRC\Primitives\HTML_Processors\TableProcessor;
 
-use function PRC\Html\parse_table_block_into_array;
+use function PRC\Primitives\HTML_Processors\parse_table_block_into_array;
 
 /**
- * @covers \PRC\Html\TableProcessor
+ * @covers \PRC\Primitives\HTML_Processors\TableProcessor
  */
 final class TableProcessorTest extends TestCase {
 

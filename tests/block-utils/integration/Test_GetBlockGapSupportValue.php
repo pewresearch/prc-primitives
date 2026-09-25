@@ -1,13 +1,13 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\get_block_gap_support_value;
+use function PRC\Primitives\BlockUtils\get_block_gap_support_value;
 
 class Test_GetBlockGapSupportValue extends WP_UnitTestCase {
 

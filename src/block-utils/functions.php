@@ -2,10 +2,10 @@
 /**
  * PRC shared block utilities.
  *
- * @package PRC\BlockUtils
+ * @package PRC\Primitives\BlockUtils
  */
 
-namespace PRC\BlockUtils;
+namespace PRC\Primitives\BlockUtils;
 
 use DougSisk\CountryState\CountryState;
 use WP_Block_Type_Registry;

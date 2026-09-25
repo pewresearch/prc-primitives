@@ -1,16 +1,16 @@
 <?php
 /**
- * @package PRC\BlockUtils\Tests
+ * @package PRC\Primitives\BlockUtils\Tests
  */
 
-namespace PRC\BlockUtils\Tests;
+namespace PRC\Primitives\BlockUtils\Tests;
 
 use WP_UnitTestCase;
 
-use function PRC\BlockUtils\get_wp_interactive_classname;
-use function PRC\BlockUtils\get_wp_interactive_context;
-use function PRC\BlockUtils\get_wp_interactive_input_value;
-use function PRC\BlockUtils\get_wp_interactive_on_click_action;
+use function PRC\Primitives\BlockUtils\get_wp_interactive_classname;
+use function PRC\Primitives\BlockUtils\get_wp_interactive_context;
+use function PRC\Primitives\BlockUtils\get_wp_interactive_input_value;
+use function PRC\Primitives\BlockUtils\get_wp_interactive_on_click_action;
 
 class Test_GetWpInteractive extends WP_UnitTestCase {
 

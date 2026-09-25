@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace PRC\Html;
+namespace PRC\Primitives\HTML_Processors;
 
 /**
  * Processes a table block into an array of data. Cell text is taken from HTML content.

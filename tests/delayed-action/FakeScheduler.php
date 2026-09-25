@@ -2,15 +2,15 @@
 /**
  * In-memory Scheduler for DelayedAction tests.
  *
- * @package PRC\DelayedAction\Tests
+ * @package PRC\Primitives\DelayedAction\Tests
  */
 
 declare(strict_types=1);
 
-namespace PRC\DelayedAction\Tests;
+namespace PRC\Primitives\DelayedAction\Tests;
 
-use PRC\DelayedAction\JobState;
-use PRC\DelayedAction\Scheduler;
+use PRC\Primitives\DelayedAction\JobState;
+use PRC\Primitives\DelayedAction\Scheduler;
 
 /**
  * Stores jobs keyed by hook, args, and group.
