@@ -119,7 +119,7 @@ class Test_PostContentBlockFilter extends WP_UnitTestCase {
 
 		$GLOBALS['post'] = get_post( $outer_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		setup_postdata( $GLOBALS['post'] );
-		$filter->enter_post_content( null, array( 'blockName' => 'core/post-content' ) );
+		$filter->enter_post_content( array(), array( 'blockName' => 'core/post-content' ) );
 
 		$GLOBALS['post'] = get_post( $inner_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		setup_postdata( $GLOBALS['post'] );
@@ -176,17 +176,49 @@ class Test_PostContentBlockFilter extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'wp-block-post-date', do_blocks( self::DATE_MARKUP ) );
 	}
 
-	public function test_short_circuited_post_content_is_not_pushed() {
+	public function test_late_short_circuit_of_top_level_post_content_leaves_no_stack_entry() {
 		strip_block_from_post_content( 'core/post-date', '__return_true' );
 		$post_id         = $this->make_post( self::DATE_MARKUP );
 		$GLOBALS['post'] = get_post( $post_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		setup_postdata( $GLOBALS['post'] );
+		$short_circuit = static fn( $pre_render, $parsed_block ) => 'core/post-content' === $parsed_block['blockName'] ? '' : $pre_render;
+		add_filter( 'pre_render_block', $short_circuit, PHP_INT_MAX, 2 );
 
-		PostContentBlockFilter::instance()->enter_post_content( false, array( 'blockName' => 'core/post-content' ) );
-		$html = do_blocks( self::DATE_MARKUP );
+		$short_circuited = do_blocks( '<!-- wp:post-content /-->' );
+		$after           = do_blocks( self::DATE_MARKUP );
 
+		remove_filter( 'pre_render_block', $short_circuit, PHP_INT_MAX );
 		wp_reset_postdata();
-		$this->assertStringContainsString( 'wp-block-post-date', $html );
+		$this->assertSame( '', $short_circuited );
+		$this->assertStringContainsString( 'wp-block-post-date', $after );
+	}
+
+	public function test_late_short_circuit_of_nested_post_content_leaves_no_stack_entry() {
+		strip_block_from_post_content( 'core/post-date', '__return_true' );
+		$post_id         = $this->make_post( self::DATE_MARKUP );
+		$GLOBALS['post'] = get_post( $post_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		setup_postdata( $GLOBALS['post'] );
+		$short_circuit = static fn( $pre_render, $parsed_block ) => 'core/post-content' === $parsed_block['blockName'] ? '' : $pre_render;
+		add_filter( 'pre_render_block', $short_circuit, PHP_INT_MAX, 2 );
+
+		do_blocks( '<!-- wp:group --><div class="wp-block-group"><!-- wp:post-content /--></div><!-- /wp:group -->' );
+		$after = do_blocks( self::DATE_MARKUP );
+
+		remove_filter( 'pre_render_block', $short_circuit, PHP_INT_MAX );
+		wp_reset_postdata();
+		$this->assertStringContainsString( 'wp-block-post-date', $after );
+	}
+
+	public function test_post_content_still_strips_when_a_pre_render_filter_declines() {
+		strip_block_from_post_content( 'core/post-date', '__return_true' );
+		$post_id      = $this->make_post( self::DATE_MARKUP );
+		$pass_through = static fn( $pre_render ) => $pre_render;
+		add_filter( 'pre_render_block', $pass_through, PHP_INT_MAX );
+
+		$html = $this->render_date_in_post_content( $post_id );
+
+		remove_filter( 'pre_render_block', $pass_through, PHP_INT_MAX );
+		$this->assertStringNotContainsString( 'wp-block-post-date', $html );
 	}
 
 	public function test_reset_removes_the_hooks() {

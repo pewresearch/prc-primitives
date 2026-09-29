@@ -98,7 +98,7 @@ strip_block_from_post_content(
 
 Pass one block name or an array of names. The optional third argument is the `render_block_{name}` priority. The callback gets the parsed block, the ID of the innermost post being rendered, and the `WP_Block` instance. The primitive does not check post types. Put that condition in the callback. Register rules before the page renders, for example on `init`. Several rules can share a block, and any rule that returns `true` removes it.
 
-The rule does not affect a block that a `pre_render_block` filter short-circuits. Call `PostContentBlockFilter::reset()` in test teardown to remove the hooks.
+The rule does not affect a block that a `pre_render_block` filter short-circuits, at any priority. The primitive tracks post content from `render_block_context`, which WordPress only runs for blocks that will render. Call `PostContentBlockFilter::reset()` in test teardown to remove the hooks.
 
 ## Tests
 

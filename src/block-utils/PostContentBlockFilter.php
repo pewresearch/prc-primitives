@@ -108,32 +108,31 @@ class PostContentBlockFilter {
 	/**
 	 * Push the post ID of a core/post-content block that is about to render.
 	 *
-	 * Runs last so any short-circuit is visible. A short-circuited block never
-	 * reaches its render_block filter, so it must not be pushed.
+	 * render_block_context runs in render_block() and in WP_Block::render() only
+	 * after pre_render_block returned null and render_block_data finished. From
+	 * there the block always reaches render_block_core/post-content, so every
+	 * push has a matching pop. A pre_render_block short-circuit at any priority
+	 * skips this filter.
 	 *
-	 * @hook pre_render_block
+	 * @hook render_block_context
 	 *
-	 * @param string|null          $pre_render   Short-circuit value.
+	 * @param array<string, mixed> $context      Block context.
 	 * @param array<string, mixed> $parsed_block Parsed block.
-	 * @param WP_Block|null        $parent_block Parent block.
-	 * @return string|null
+	 * @return array<string, mixed>
 	 */
-	public function enter_post_content( $pre_render, $parsed_block, $parent_block = null ) {
-		if ( null !== $pre_render || 'core/post-content' !== ( $parsed_block['blockName'] ?? '' ) ) {
-			return $pre_render;
+	public function enter_post_content( $context, $parsed_block = array() ) {
+		if ( 'core/post-content' !== ( $parsed_block['blockName'] ?? '' ) ) {
+			return $context;
 		}
 
-		$post_id = 0;
-		if ( $parent_block instanceof WP_Block && isset( $parent_block->context['postId'] ) ) {
-			$post_id = (int) $parent_block->context['postId'];
-		}
+		$post_id = is_array( $context ) ? (int) ( $context['postId'] ?? 0 ) : 0;
 		if ( 0 === $post_id ) {
 			$post_id = (int) get_the_ID();
 		}
 
 		$this->post_id_stack[] = $post_id;
 
-		return $pre_render;
+		return $context;
 	}
 
 	/**
@@ -191,7 +190,7 @@ class PostContentBlockFilter {
 		}
 
 		$this->tracking = true;
-		add_filter( 'pre_render_block', array( $this, 'enter_post_content' ), PHP_INT_MAX, 3 );
+		add_filter( 'render_block_context', array( $this, 'enter_post_content' ), PHP_INT_MAX, 2 );
 		add_filter( 'render_block_core/post-content', array( $this, 'leave_post_content' ), 1 );
 	}
 
@@ -199,7 +198,7 @@ class PostContentBlockFilter {
 	 * Remove the hooks this instance added.
 	 */
 	private function detach(): void {
-		remove_filter( 'pre_render_block', array( $this, 'enter_post_content' ), PHP_INT_MAX );
+		remove_filter( 'render_block_context', array( $this, 'enter_post_content' ), PHP_INT_MAX );
 		remove_filter( 'render_block_core/post-content', array( $this, 'leave_post_content' ), 1 );
 
 		foreach ( $this->hooked as $hook_key => $callback ) {
