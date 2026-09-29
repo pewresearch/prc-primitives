@@ -108,8 +108,8 @@ class PostContentBlockFilter {
 	/**
 	 * Push the post ID of a core/post-content block that is about to render.
 	 *
-	 * Runs late so an earlier short-circuit is visible. A short-circuited block
-	 * never reaches its render_block filter, so it must not be pushed.
+	 * Runs last so any short-circuit is visible. A short-circuited block never
+	 * reaches its render_block filter, so it must not be pushed.
 	 *
 	 * @hook pre_render_block
 	 *
@@ -191,7 +191,7 @@ class PostContentBlockFilter {
 		}
 
 		$this->tracking = true;
-		add_filter( 'pre_render_block', array( $this, 'enter_post_content' ), 99, 3 );
+		add_filter( 'pre_render_block', array( $this, 'enter_post_content' ), PHP_INT_MAX, 3 );
 		add_filter( 'render_block_core/post-content', array( $this, 'leave_post_content' ), 1 );
 	}
 
@@ -199,7 +199,7 @@ class PostContentBlockFilter {
 	 * Remove the hooks this instance added.
 	 */
 	private function detach(): void {
-		remove_filter( 'pre_render_block', array( $this, 'enter_post_content' ), 99 );
+		remove_filter( 'pre_render_block', array( $this, 'enter_post_content' ), PHP_INT_MAX );
 		remove_filter( 'render_block_core/post-content', array( $this, 'leave_post_content' ), 1 );
 
 		foreach ( $this->hooked as $hook_key => $callback ) {
