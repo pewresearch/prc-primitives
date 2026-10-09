@@ -79,6 +79,22 @@ function set_experiment_source( ?ExperimentSource $source ): void {
 }
 
 /**
+ * Running experiments whose audience matches the current visitor, or an explicit visitor.
+ *
+ * @param VisitorContext|null $visitor Explicit visitor, or null for the current visitor.
+ * @return array<Experiment>
+ */
+function get_visitor_experiments( ?VisitorContext $visitor = null ): array {
+	$visitor ??= FeatureFlags::current_visitor();
+	return array_values(
+		array_filter(
+			FeatureFlags::experiments(),
+			static fn( Experiment $experiment ) => $experiment->running && $experiment->audience->matches( $visitor )
+		)
+	);
+}
+
+/**
  * Assignments made for the current visitor in this request, keyed by flag slug.
  *
  * @return array<string, Assignment>

@@ -20,6 +20,7 @@ use WP_UnitTestCase;
 use function PRC\Primitives\Feature_Flags\get_evaluation_log;
 use function PRC\Primitives\Feature_Flags\get_feature_flags_context;
 use function PRC\Primitives\Feature_Flags\get_registered_feature_flags;
+use function PRC\Primitives\Feature_Flags\get_visitor_experiments;
 use function PRC\Primitives\Feature_Flags\is_feature_enabled;
 use function PRC\Primitives\Feature_Flags\register_feature_flag;
 use function PRC\Primitives\Feature_Flags\set_experiment_source;
@@ -98,6 +99,25 @@ final class FunctionsTest extends WP_UnitTestCase {
 		);
 
 		$this->assertTrue( is_feature_enabled( 'demo/gated' ) );
+	}
+
+	public function test_visitor_experiments_are_running_audience_matches(): void {
+		set_experiment_source(
+			self::source(
+				array(
+					new Experiment( 21, 'Editors', true, array(), new Audience( roles: array( 'editor' ) ) ),
+					new Experiment( 22, 'Paused editors', false, array(), new Audience( roles: array( 'editor' ) ) ),
+					new Experiment( 23, 'Authors', true, array(), new Audience( roles: array( 'author' ) ) ),
+				)
+			)
+		);
+
+		$ids = array_map(
+			static fn( Experiment $experiment ) => $experiment->id,
+			get_visitor_experiments( new VisitorContext( 9, array( 'editor' ) ) )
+		);
+
+		$this->assertSame( array( 21 ), $ids );
 	}
 
 	public function test_interactivity_context_shape(): void {
