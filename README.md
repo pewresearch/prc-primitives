@@ -54,6 +54,7 @@ It rewrites PHP, strings with doubled backslashes, JSON, and Markdown. It skips 
 | `src/delayed-action/` | `PRC\Primitives\DelayedAction` | Queue and cancel a unique delayed Action Scheduler job |
 | `src/url-helper/` | `PRC\Primitives\URL_Helper` | `URL_Helper`, which resolves a preview link, wp-admin edit link, or canonical URL to a post ID |
 | `src/term-data-store/` | `PRC\Primitives\TDS` | `add_relationship`, `get_related_post`, `get_related_term`, and the sync hooks. Forked from 10up/term-data-store; see `src/term-data-store/LICENSE` |
+| `src/feature-flags/` | `PRC\Primitives\Feature_Flags` | `register_feature_flag`, `is_feature_enabled`, `get_feature_flags_context`, the pure `Evaluator`, and the `ExperimentSource` storage contract |
 
 Callers keep their own post meta and hook callbacks. `DelayedAction` only talks to the scheduler.
 
@@ -99,6 +100,58 @@ strip_block_from_post_content(
 Pass one block name or an array of names. The optional third argument is the `render_block_{name}` priority. The callback gets the parsed block, the ID of the innermost post being rendered, and the `WP_Block` instance. The primitive does not check post types. Put that condition in the callback. Register rules before the page renders, for example on `init`. Several rules can share a block, and any rule that returns `true` removes it.
 
 The rule does not affect a block that a `pre_render_block` filter short-circuits, at any priority. The primitive tracks post content from `render_block_context`, which WordPress only runs for blocks that will render. Call `PostContentBlockFilter::reset()` in test teardown to remove the hooks.
+
+### Feature flags
+
+Register a flag on `init`, then check it where the behavior changes.
+
+```php
+use function PRC\Primitives\Feature_Flags\register_feature_flag;
+use function PRC\Primitives\Feature_Flags\is_feature_enabled;
+
+add_action(
+	'init',
+	fn() => register_feature_flag(
+		'block-library/carousel-v2',
+		array(
+			'label'       => 'Carousel v2',
+			'description' => 'Swap the carousel for the v2 slider.',
+			'default'     => false,
+		)
+	)
+);
+
+if ( is_feature_enabled( 'block-library/carousel-v2' ) ) {
+	// New behavior.
+}
+```
+
+A slug is lowercase letters, digits, and dashes, with at most one slash. An unregistered slug returns `false` and triggers `_doing_it_wrong`.
+
+Experiments decide the value. An experiment is a set of `slug => bool` overrides plus an audience. The audience is everyone, a list of WP roles, a list of WP user IDs, or a list of VIP Vary_Cache groups. The library does not store experiments. The `prc-feature-flags` plugin stores them as a post type and calls `set_experiment_source()`. Without a source, every flag returns its default.
+
+When more than one running experiment matches the visitor and sets the same flag, off wins. Any experiment can therefore act as a kill switch.
+
+A block that needs a flag in the browser passes it through the Interactivity API context:
+
+```php
+use function PRC\Primitives\Feature_Flags\get_feature_flags_context;
+
+echo wp_interactivity_data_wp_context(
+	array_merge(
+		array( 'items' => $items ),
+		get_feature_flags_context( array( 'block-library/carousel-v2' ) )
+	)
+);
+```
+
+The block reads `context.featureFlags[ 'block-library/carousel-v2' ]`. The value is rendered into cached HTML. It is correct for logged-in users, because VIP bypasses the page cache for them, and for each Vary_Cache group, because each group gets its own cached variant. Logged-out visitors outside every group only match experiments that target everyone.
+
+`get_evaluation_log()` returns every assignment made for the current visitor in this request, keyed by slug. Each `Assignment` names the experiments that decided it. Pass a `VisitorContext` to `is_feature_enabled()` to evaluate for someone else, for example in WP-CLI. Those evaluations are not logged.
+
+`log_error()` also sends the error to Sentry when the wp-sentry plugin is active and has a DSN.
+
+Call `FeatureFlags::reset()` in test teardown.
 
 ## Tests
 

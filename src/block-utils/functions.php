@@ -626,7 +626,7 @@ function is_publications() {
 }
 
 /**
- * Log an error to the error log and optionally to New Relic.
+ * Log an error to Sentry when wp-sentry has a DSN, and to New Relic or the error log.
  *
  * @param mixed $error The error to log (string, WP_Error, Throwable).
  * @return mixed $error The error that was logged.
@@ -659,6 +659,18 @@ function log_error( $error ) {
 			true
 		)
 	);
+
+	if ( function_exists( 'wp_sentry_safe' ) ) {
+		wp_sentry_safe(
+			static function ( $hub ) use ( $error, $message ) {
+				if ( $error instanceof \Throwable ) {
+					$hub->captureException( $error );
+				} else {
+					$hub->captureMessage( $message, \Sentry\Severity::error() );
+				}
+			}
+		);
+	}
 
 	if ( extension_loaded( 'newrelic' ) && function_exists( 'newrelic_notice_error' ) ) {
 		if ( $error instanceof \Throwable ) {
