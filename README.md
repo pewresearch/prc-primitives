@@ -128,7 +128,7 @@ if ( is_feature_enabled( 'block-library/carousel-v2' ) ) {
 
 A slug is lowercase letters, digits, and dashes, with at most one slash. An unregistered slug returns `false` and triggers `_doing_it_wrong`.
 
-Experiments decide the value. An experiment is a set of `slug => bool` overrides plus an audience. The audience is everyone, a list of WP roles, a list of WP user IDs, or a list of VIP Vary_Cache groups. The library does not store experiments. The `prc-feature-flags` plugin stores them as a post type and calls `set_experiment_source()`. Without a source, every flag returns its default.
+Experiments decide the value. An experiment is a set of `slug => bool` overrides plus an audience. The audience is everyone, every logged-in WP user, a list of WP roles, a list of WP user IDs, or a list of VIP Vary_Cache groups. Logged-out visitors never match the logged-in audience. The library does not store experiments. The `prc-feature-flags` plugin stores them as a post type and calls `set_experiment_source()`. Without a source, every flag returns its default.
 
 When more than one running experiment matches the visitor and sets the same flag, off wins. Any experiment can therefore act as a kill switch.
 
