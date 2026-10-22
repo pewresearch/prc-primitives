@@ -71,6 +71,36 @@ final class EvaluatorTest extends TestCase {
 		);
 	}
 
+	public function test_logged_in_audience_matches_any_logged_in_user(): void {
+		$experiments = array( self::experiment( 10, true, new Audience( logged_in: true ) ) );
+		$flag        = new Flag( self::SLUG, 'Carousel' );
+
+		$this->assertEquals(
+			new Assignment( self::SLUG, true, array( 10 ) ),
+			Evaluator::evaluate( $flag, $experiments, new VisitorContext( 12, array( 'subscriber' ) ) )
+		);
+		$this->assertTrue( Evaluator::evaluate( $flag, $experiments, new VisitorContext( 13 ) )->enabled );
+	}
+
+	public function test_logged_in_audience_never_matches_a_logged_out_visitor(): void {
+		$experiments = array( self::experiment( 10, true, new Audience( logged_in: true ) ) );
+
+		$this->assertFalse( Evaluator::evaluate( new Flag( self::SLUG, 'Carousel' ), $experiments, new VisitorContext() )->enabled );
+		$this->assertFalse(
+			Evaluator::evaluate( new Flag( self::SLUG, 'Carousel' ), $experiments, new VisitorContext( 0, array(), array( 'prc_user_accounts' ) ) )->enabled
+		);
+	}
+
+	public function test_logged_in_audience_is_not_empty_and_round_trips(): void {
+		$audience = Audience::from_array( array( 'logged_in' => true ) );
+
+		$this->assertTrue( $audience->logged_in );
+		$this->assertFalse( $audience->is_empty() );
+		$this->assertTrue( Audience::from_array( $audience->to_array() )->logged_in );
+		$this->assertFalse( Audience::from_array( array( 'roles' => array( 'editor' ) ) )->logged_in );
+		$this->assertTrue( ( new Audience() )->is_empty() );
+	}
+
 	public function test_off_wins_over_on(): void {
 		$experiments = array(
 			self::experiment( 1, true, new Audience( everyone: true ) ),
@@ -106,10 +136,11 @@ final class EvaluatorTest extends TestCase {
 	public function test_audience_from_array_drops_bad_values(): void {
 		$this->assertSame(
 			array(
-				'everyone' => false,
-				'roles'    => array( 'editor' ),
-				'user_ids' => array( 3, 9 ),
-				'groups'   => array( 'prc_user_accounts' ),
+				'everyone'  => false,
+				'roles'     => array( 'editor' ),
+				'user_ids'  => array( 3, 9 ),
+				'groups'    => array( 'prc_user_accounts' ),
+				'logged_in' => false,
 			),
 			Audience::from_array(
 				array(

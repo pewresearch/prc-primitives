@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace PRC\Primitives\Feature_Flags;
 
 /**
- * A visitor matches when the audience targets everyone, or when any role, user ID, or group overlaps.
+ * A visitor matches when the audience targets everyone, targets every logged-in WP user and the visitor is one, or when any role, user ID, or group overlaps.
  */
 final class Audience {
 
@@ -19,12 +19,14 @@ final class Audience {
 	 * @param array<string> $roles    WP role slugs.
 	 * @param array<int>    $user_ids WP user IDs.
 	 * @param array<string> $groups   VIP Vary_Cache group names.
+	 * @param bool          $logged_in Target every logged-in WP user, whatever their roles. Logged-out visitors never match.
 	 */
 	public function __construct(
 		public readonly bool $everyone = false,
 		public readonly array $roles = array(),
 		public readonly array $user_ids = array(),
-		public readonly array $groups = array()
+		public readonly array $groups = array(),
+		public readonly bool $logged_in = false
 	) {}
 
 	/**
@@ -38,28 +40,33 @@ final class Audience {
 			! empty( $raw['everyone'] ),
 			self::strings( $raw['roles'] ?? array() ),
 			array_values( array_unique( array_filter( array_map( 'intval', (array) ( $raw['user_ids'] ?? array() ) ) ) ) ),
-			self::strings( $raw['groups'] ?? array() )
+			self::strings( $raw['groups'] ?? array() ),
+			! empty( $raw['logged_in'] )
 		);
 	}
 
 	/**
-	 * @return array{ everyone: bool, roles: array<string>, user_ids: array<int>, groups: array<string> }
+	 * @return array{ everyone: bool, roles: array<string>, user_ids: array<int>, groups: array<string>, logged_in: bool }
 	 */
 	public function to_array(): array {
 		return array(
-			'everyone' => $this->everyone,
-			'roles'    => $this->roles,
-			'user_ids' => $this->user_ids,
-			'groups'   => $this->groups,
+			'everyone'  => $this->everyone,
+			'roles'     => $this->roles,
+			'user_ids'  => $this->user_ids,
+			'groups'    => $this->groups,
+			'logged_in' => $this->logged_in,
 		);
 	}
 
 	public function is_empty(): bool {
-		return ! $this->everyone && array() === $this->roles && array() === $this->user_ids && array() === $this->groups;
+		return ! $this->everyone && ! $this->logged_in && array() === $this->roles && array() === $this->user_ids && array() === $this->groups;
 	}
 
 	public function matches( VisitorContext $visitor ): bool {
 		if ( $this->everyone ) {
+			return true;
+		}
+		if ( $this->logged_in && $visitor->user_id > 0 ) {
 			return true;
 		}
 		if ( $visitor->user_id > 0 && in_array( $visitor->user_id, $this->user_ids, true ) ) {
