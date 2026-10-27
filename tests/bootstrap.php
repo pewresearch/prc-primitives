@@ -40,6 +40,6 @@ function prc_primitives_tests_register_fixture_theme() {
 tests_add_filter( 'muplugins_loaded', 'prc_primitives_tests_register_fixture_theme' );
 
 require_once __DIR__ . '/post-publish-pipeline/Support/action-scheduler.php';
-tests_add_filter( 'muplugins_loaded', array( \PRC\Primitives\Post_Publish_Pipeline\Tests\Support\Implementation::class, 'boot' ) );
+tests_add_filter( 'muplugins_loaded', 'PRC\Primitives\Post_Publish_Pipeline\boot' );
 
 require "{$_tests_dir}/includes/bootstrap.php";

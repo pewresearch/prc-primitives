@@ -2,8 +2,6 @@
 /**
  * Lifecycle hooks fired for each post status move, and the async jobs they queue.
  *
- * Run against the legacy plugin with PRC_POST_PUBLISH_PIPELINE_LEGACY=<path to prc-post-publish-pipeline.php>.
- *
  * @package PRC\Primitives\Post_Publish_Pipeline\Tests
  */
 
@@ -12,8 +10,10 @@ declare(strict_types=1);
 namespace PRC\Primitives\Post_Publish_Pipeline\Tests;
 
 use PRC\Primitives\Post_Publish_Pipeline\Tests\Support\Async_Queue;
-use PRC\Primitives\Post_Publish_Pipeline\Tests\Support\Implementation;
 use WP_UnitTestCase;
+
+use function PRC\Primitives\Post_Publish_Pipeline\enqueue_async_event;
+use function PRC\Primitives\Post_Publish_Pipeline\get_async_editor_id;
 
 final class LifecycleTest extends WP_UnitTestCase {
 
@@ -461,7 +461,7 @@ final class LifecycleTest extends WP_UnitTestCase {
 		add_action(
 			'prc_platform_async_on_publish',
 			static function () use ( &$seen ) {
-				$seen = Implementation::async_editor_id();
+				$seen = get_async_editor_id();
 			}
 		);
 		wp_set_current_user( 0 );
@@ -469,19 +469,19 @@ final class LifecycleTest extends WP_UnitTestCase {
 		Async_Queue::run_all();
 
 		$this->assertSame( $this->editor_id, $seen );
-		$this->assertSame( 0, Implementation::async_editor_id() );
+		$this->assertSame( 0, get_async_editor_id() );
 	}
 
 	public function test_enqueue_async_event_accepts_only_async_events_on_real_posts(): void {
 		$this->insert_then_clear( 'draft' );
 
-		Implementation::enqueue_async_event( $this->post_id, 'post_init' );
-		Implementation::enqueue_async_event( PHP_INT_MAX, 'publish' );
-		Implementation::enqueue_async_event( 0, 'publish' );
+		enqueue_async_event( $this->post_id, 'post_init' );
+		enqueue_async_event( PHP_INT_MAX, 'publish' );
+		enqueue_async_event( 0, 'publish' );
 		$this->assertSame( array(), Async_Queue::$jobs );
 
-		Implementation::enqueue_async_event( $this->post_id, 'incremental_save' );
-		Implementation::enqueue_async_event( $this->post_id, 'incremental_save' );
+		enqueue_async_event( $this->post_id, 'incremental_save' );
+		enqueue_async_event( $this->post_id, 'incremental_save' );
 
 		$this->assertSame( $this->job( 'incremental_save' ), Async_Queue::$jobs );
 		$this->assertSame(
