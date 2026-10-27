@@ -43,7 +43,7 @@ final class Pipeline {
 	);
 
 	private const LABEL_FALLBACKS = array(
-		'fact-sheets'        => 'Fact Sheet',
+		'fact-sheet'         => 'Fact Sheet',
 		'interactives'       => 'Feature',
 		'quiz'               => 'Quiz',
 		'short-read'         => 'Short Read',
@@ -184,7 +184,8 @@ final class Pipeline {
 		return match ( $event ) {
 			'incremental_save'             => in_array( $status, array( 'draft', 'publish' ), true ),
 			'publish', 'update', 'untrash' => 'publish' === $status,
-			'unpublish', 'trash'           => 'publish' !== $status,
+			'unpublish'                    => 'publish' !== $status,
+			'trash'                        => 'trash' === $status,
 		};
 	}
 
