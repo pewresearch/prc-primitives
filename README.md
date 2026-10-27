@@ -1,6 +1,6 @@
 # PRC Primitives
 
-Shared PHP library for PRC Platform plugins. It holds block rendering helpers, HTML processors built on `WP_HTML_Tag_Processor`, a delay/cancel helper for Action Scheduler jobs, a URL to post ID resolver, and term data store relationships that keep a post type and a taxonomy in 1:1 sync.
+Shared PHP library for PRC Platform plugins. It holds block rendering helpers, HTML processors built on `WP_HTML_Tag_Processor`, a delay/cancel helper for Action Scheduler jobs, a URL to post ID resolver, term data store relationships that keep a post type and a taxonomy in 1:1 sync, feature flags, and the post publish pipeline lifecycle hooks.
 
 The package changes infrequently. Plugins such as email builder and Apple News depend on it as a stable layer.
 
@@ -55,6 +55,7 @@ It rewrites PHP, strings with doubled backslashes, JSON, and Markdown. It skips 
 | `src/url-helper/` | `PRC\Primitives\URL_Helper` | `URL_Helper`, which resolves a preview link, wp-admin edit link, or canonical URL to a post ID |
 | `src/term-data-store/` | `PRC\Primitives\TDS` | `add_relationship`, `get_related_post`, `get_related_term`, and the sync hooks. Forked from 10up/term-data-store; see `src/term-data-store/LICENSE` |
 | `src/feature-flags/` | `PRC\Primitives\Feature_Flags` | `register_feature_flag`, `is_feature_enabled`, `get_feature_flags_context`, the pure `Evaluator`, and the `ExperimentSource` storage contract |
+| `src/post-publish-pipeline/` | `PRC\Primitives\Post_Publish_Pipeline` | `boot`, the `prc_platform_on_*` and `prc_platform_async_on_*` lifecycle hooks, `enqueue_async_event`, the pipeline REST fields, and `Post_Resolution\Post_URL_Resolver` |
 
 Callers keep their own post meta and hook callbacks. `DelayedAction` only talks to the scheduler.
 
@@ -152,6 +153,49 @@ The block reads `context.featureFlags[ 'block-library/carousel-v2' ]`. The value
 `log_error()` also sends the error to Sentry when the wp-sentry plugin is active and has a DSN.
 
 Call `FeatureFlags::reset()` in test teardown.
+
+### Post publish pipeline
+
+The pipeline turns each `wp_after_insert_post` into one set of PRC lifecycle hooks. Nothing registers until the site calls `boot()`. The PRC Platform mu-plugin loader calls it once. Later calls do nothing.
+
+```php
+\PRC\Primitives\Post_Publish_Pipeline\boot();
+```
+
+The pipeline tracks `post`, `feature`, `quiz`, `fact-sheet`, `short-read`, `events`, `mini-course`, `press-release`, `block_module`, `collections`, and `prc_newsletter`. Filter `prc_platform_post_publish_pipeline_post_types` to change the list. It skips autosaves, revisions, and writes made while `DOING_AUTOSAVE` or `DOING_AJAX` is true. WP-CLI writes still fire the hooks, but under WP-CLI the post object keeps placeholder `label` and `canonical_url` values.
+
+Sync hooks fire during the save request. Each has a per-post-type variant, for example `prc_platform_on_short-read_publish`.
+
+| Hook | Fires when | Args |
+| --- | --- | --- |
+| `prc_platform_on_post_init` | A new post is inserted as `auto-draft`. Only the ID is meaningful. The variant is `prc_platform_on_{post_type}_init`. | `$post` |
+| `prc_platform_on_status_transition` | The status differs from the prior status, including the first insert | `$post`, `$current`, `$prior` (null on insert), `$has_blocks` |
+| `prc_platform_on_incremental_save` | Both the prior and the current status are `draft` or `publish` | `$post` |
+| `prc_platform_on_publish` | `draft` or `future` moves to `publish` | `$post`, `$has_blocks` |
+| `prc_platform_on_update` | Any other save that leaves the post in `publish` | `$post`, `$has_blocks` |
+| `prc_platform_on_unpublish` | `publish` moves to `draft` | `$post`, `$has_blocks` |
+| `prc_platform_on_trash` | The post moves to `trash` | `$post`, `$has_blocks` |
+| `prc_platform_on_untrash` | `trash` moves to `publish` or `draft` | `$post`, `$has_blocks` |
+
+`$post` is a copy of the `WP_Post` with three more fields: `label`, `canonical_url`, and `visibility` (the `_postVisibility` meta, or `false`). Filter `prc_platform_wp_post_object` to add fields. The pipeline fills its own at priority 1.
+
+Publish, update, unpublish, trash, and untrash also queue one Action Scheduler job, `prc_platform_post_publish_pipeline_async_dispatch` in group `prc-post-publish-pipeline`. The job loads the post again and fires `prc_platform_async_on_{event}` and `prc_platform_async_on_{post_type}_{event}` with `$post` and `$has_blocks`. It drops itself when the status has moved on, for example a publish job for a post that is now a draft. Async hooks have no prior status. `get_async_editor_id()` returns the user whose save queued the running job.
+
+To queue an async event for a write that skipped the sync hooks, call `enqueue_async_event()`. It also accepts `incremental_save`, which the pipeline never queues itself.
+
+```php
+\PRC\Primitives\Post_Publish_Pipeline\enqueue_async_event( $post_id, 'publish' );
+```
+
+| Hook | Type | Use |
+| --- | --- | --- |
+| `prc_platform_post_publish_pipeline_should_process` | Filter (`$should`, `$post_id`, `$post_after`, `$is_update`, `$post_before`) | Return `false` to skip every sync hook and async job for one write |
+| `prc_platform_post_publish_pipeline_should_enqueue_async` | Filter (`$should`, `$post_id`, `$event`, `$post_type`) | Return `false` to skip the async job. Sync hooks still fire. |
+| `prc_platform_post_publish_pipeline_async_event_enqueued` | Action (`$post_id`, `$event`, `$editor_id`) | Queue a dedicated job that must not wait behind the shared one |
+
+Tracked post types also get four REST fields. `label` is the content format: the first `formats` term on the primary site (`PRC_PRIMARY_SITE_ID`, default 1), the first `category` elsewhere, and `Report` when there is none. Post types such as `quiz` and `short-read` always use a fixed label. `canonical_url` is the `_redirect` meta when set, otherwise the permalink. `post_parent` and `word_count` round out the set, and `/wp/v2/posts?post_parent=<id>` filters by parent.
+
+`Post_Resolution\Post_URL_Resolver::resolve()` maps a pasted URL or Slack `<url|label>` token to a `Resolved_Post_URL` or an `Unresolved_Post_URL` with reason `foreign_host` or `not_found`. It returns `null` for text that is not an http(s) URL. URLs on `pewresearch.org` and its staging hosts resolve against `home_url()`.
 
 ## Tests
 

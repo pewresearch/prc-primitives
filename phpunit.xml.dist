@@ -22,6 +22,7 @@
 			<directory suffix=".php">./tests/url-helper/integration/</directory>
 			<directory suffix=".php">./tests/term-data-store/integration/</directory>
 			<directory suffix=".php">./tests/feature-flags/integration/</directory>
+			<directory suffix=".php">./tests/post-publish-pipeline/integration/</directory>
 		</testsuite>
 		<testsuite name="html">
 			<directory suffix=".php">./tests/html/</directory>

@@ -1,6 +1,6 @@
 {
   "name": "prc/primitives",
-  "description": "Shared PHP primitives for the PRC Platform: block utilities, HTML processors, delayed Action Scheduler jobs, URL to post ID resolution, term data store relationships, and feature flags.",
+  "description": "Shared PHP primitives for the PRC Platform: block utilities, HTML processors, delayed Action Scheduler jobs, URL to post ID resolution, term data store relationships, feature flags, and post publish pipeline lifecycle hooks.",
   "type": "library",
   "license": "GPL-2.0-or-later",
   "require": {
@@ -17,14 +17,16 @@
       "PRC\\Primitives\\BlockUtils\\": "src/block-utils/",
       "PRC\\Primitives\\HTML_Processors\\": "src/html-processors/",
       "PRC\\Primitives\\DelayedAction\\": "src/delayed-action/",
-      "PRC\\Primitives\\Feature_Flags\\": "src/feature-flags/"
+      "PRC\\Primitives\\Feature_Flags\\": "src/feature-flags/",
+      "PRC\\Primitives\\Post_Publish_Pipeline\\": "src/post-publish-pipeline/"
     },
     "files": [
       "src/block-utils/functions.php",
       "src/html-processors/functions.php",
       "src/url-helper/url-helper.php",
       "src/term-data-store/term-data-store.php",
-      "src/feature-flags/functions.php"
+      "src/feature-flags/functions.php",
+      "src/post-publish-pipeline/functions.php"
     ]
   },
   "autoload-dev": {
@@ -34,7 +36,8 @@
       "PRC\\Primitives\\DelayedAction\\Tests\\": "tests/delayed-action/",
       "PRC\\Primitives\\URL_Helper\\Tests\\": "tests/url-helper/",
       "PRC\\Primitives\\TDS\\Tests\\": "tests/term-data-store/",
-      "PRC\\Primitives\\Feature_Flags\\Tests\\": "tests/feature-flags/"
+      "PRC\\Primitives\\Feature_Flags\\Tests\\": "tests/feature-flags/",
+      "PRC\\Primitives\\Post_Publish_Pipeline\\Tests\\": "tests/post-publish-pipeline/"
     }
   },
   "scripts": {
